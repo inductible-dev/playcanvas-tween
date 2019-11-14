@@ -8,6 +8,10 @@ pc.extend(pc, function () {
     var TweenManager = function (app) {
         this._app = app;
         this._tweens = [];
+        this._time = 0;
+        this.timeScale = 1;
+        this._timePrev = 0;
+        this._timeDelta = 0;
         this._add = []; // to be added
     };
 
@@ -662,9 +666,11 @@ pc.extend(pc, function () {
     // Add pc.Application#addTweenManager method
     pc.Application.prototype.addTweenManager = function () {
         this._tweenManager = new pc.TweenManager(this);
-
-        this.on("update", function (dt) {
-            this._tweenManager.update(dt);
+        this.on("update", function (dt) {            
+            this._time = pc.app._time;
+            this._timeDelta = ((this._time-this._timePrev)/1000) * this._tweenManager.timeScale;
+            this._timePrev = this._time;        
+            this._tweenManager.update(this._timeDelta);
         });
     };
 
